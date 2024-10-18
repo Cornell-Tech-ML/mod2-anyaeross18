@@ -4,6 +4,7 @@ Be sure you have minitorch installed in you Virtual Env.
 """
 
 import minitorch
+import numpy as np
 
 # Use this function to make a random parameter in
 # your module.
@@ -16,6 +17,39 @@ def RParam(*shape):
 def default_log_fn(epoch, total_loss, correct, losses):
     print("Epoch ", epoch, " loss ", total_loss, "correct", correct)
 
+class Network(minitorch.Module):
+    def __init__(self, hidden_layers):
+        super().__init__()
+        self.layer1 = Linear(2, hidden_layers)
+        self.layer2 = Linear(hidden_layers, hidden_layers)
+        self.layer3 = Linear(hidden_layers, 1)
+
+    def forward(self, x):
+        h = self.layer1.forward(x).relu()
+        h = self.layer2.forward(h).relu()
+        return self.layer3.forward(h).sigmoid()
+
+class Linear(minitorch.Module):
+    def __init__(self, in_size, out_size):
+        super().__init__()
+        self.weights = RParam(in_size, out_size)
+        self.bias = RParam(out_size)
+        self.out_size = out_size
+
+    def forward(self, inputs):
+        #return np.matmul(inputs, self.weights.value) + self.bias.value
+        #weights = minitorch.tensor(self.weights.value)
+        #bias = minitorch.tensor(self.bias.value)
+        m, n = inputs.shape
+        n, p = self.weights.value.shape
+        result = minitorch.tensor([0.0] * m * p).view(m, p)
+        for i in range(m):
+            for j in range(p):
+                for k in range(n):
+                    result[i, j] = inputs[i, k] * self.weights.value[k, j] + result[i, j]
+                result[i, j] = self.bias.value[j] + result[i, j]
+        #assert result.shape != (m, p), f"{result}, {inputs}, {self.weights.value}, {self.bias.value}"
+        return result
 
 class TensorTrain:
     def __init__(self, hidden_layers):
