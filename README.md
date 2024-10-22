@@ -18,6 +18,10 @@ The files that will be synced are:
 
         minitorch/operators.py minitorch/module.py minitorch/autodiff.py minitorch/scalar.py minitorch/scalar_functions.py minitorch/module.py project/run_manual.py project/run_scalar.py project/datasets.py
 
+## Datasets
+
+For each dataset the screenshot of the streamlit page, pdf file, and the output log file, txt file, can be found in [DatasetTesting](DatasetTesting).
+
 ## Simple Dataset
 ![Simple Image 1](DatasetTesting/Simple/Simple-1.png)
 ![Simple Image 2](DatasetTesting/Simple/Simple-2.png)
