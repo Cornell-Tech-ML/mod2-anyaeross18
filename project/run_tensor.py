@@ -37,10 +37,16 @@ class Linear(minitorch.Module):
         self.out_size = out_size
 
     def forward(self, inputs):
+        # ASSIGN2.5
+        batch, in_size = inputs.shape
+        weights = self.weights.value.view(1, in_size, self.out_size)
+        x = inputs.view(batch, in_size, 1)
+        s = (weights * x).sum(1).view(batch, self.out_size)
+        return s + self.bias.value.view(self.out_size)
         #return np.matmul(inputs, self.weights.value) + self.bias.value
         #weights = minitorch.tensor(self.weights.value)
         #bias = minitorch.tensor(self.bias.value)
-        m, n = inputs.shape
+        '''m, n = inputs.shape
         n, p = self.weights.value.shape
         result = minitorch.tensor([0.0] * m * p).view(m, p)
         for i in range(m):
@@ -49,7 +55,7 @@ class Linear(minitorch.Module):
                     result[i, j] = inputs[i, k] * self.weights.value[k, j] + result[i, j]
                 result[i, j] = self.bias.value[j] + result[i, j]
         #assert result.shape != (m, p), f"{result}, {inputs}, {self.weights.value}, {self.bias.value}"
-        return result
+        return result'''
 
 class TensorTrain:
     def __init__(self, hidden_layers):

@@ -10,7 +10,7 @@ from .tensor_data import (
     index_to_position,
     shape_broadcast,
     to_index,
-    # broadcast_index,  # Add this line to import broadcast_index
+    broadcast_index,
 )
 
 if TYPE_CHECKING:
@@ -335,30 +335,20 @@ def tensor_zip(
         b_shape: Shape,
         b_strides: Strides,
     ) -> None:
-        out_index = np.array(out_shape)
-        a_index = np.array(a_shape)
-        b_index = np.array(b_shape)
+        a_npShape = np.array(a_shape)
+        b_npShape = np.array(b_shape)
+        out_npShape = np.array(out_shape)
 
-        for i in range(len(out)):
-            to_index(i, out_shape, out_index)
+        for out_idx in range(len(out)):
+            to_index(out_idx, out_shape, out_npShape)
+            broadcast_index(out_npShape, out_shape, a_shape, a_npShape)
+            broadcast_index(out_npShape, out_shape, b_shape, b_npShape)
 
-            for j in range(len(a_shape)):
-                if a_shape[j] == 1:
-                    a_index[j] = 0
-                else:
-                    a_index[j] = out_index[j]
-
-            for k in range(len(b_shape)):
-                if b_shape[k] == 1:
-                    b_index[k] = 0
-                else:
-                    b_index[k] = out_index[k]
-
-            a_pos = index_to_position(a_index, a_strides)
-            b_pos = index_to_position(b_index, b_strides)
-            out_pos = index_to_position(out_index, out_strides)
-
-            out[out_pos] = fn(a_storage[a_pos], b_storage[b_pos])
+            a_idx = index_to_position(a_npShape, a_strides)
+            b_idx = index_to_position(b_npShape, b_strides)
+            out[index_to_position(out_npShape, out_strides)] = fn(
+                a_storage[a_idx], b_storage[b_idx]
+            )
 
     return _zip
 
